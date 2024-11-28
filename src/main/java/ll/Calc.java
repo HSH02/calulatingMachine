@@ -1,10 +1,7 @@
 package ll;
 
-import java.util.Arrays;
-
 public class Calc {
     public static int run(String expression){
-        System.out.println(Arrays.toString(expression.split(" ")));
         expression = expression.replaceAll("\\s+", "");
 
         if(!checkClosingParentheses(expression)) {
@@ -20,10 +17,13 @@ public class Calc {
             return Integer.parseInt(expression);
         }
 
-        int operatorIndex = findMultiDivOperator(expression);
+        // 먼저 곱셈/나눗셈 처리
+        //int operatorIndex = findMultiDivOperator(expression);
+        int operatorIndex = findOperator(expression, 0);
 
         if (operatorIndex == -1) {
-            operatorIndex = findFirstOperator(expression);
+            // 곱셈/나눗셈이 없으면 덧셈/뺄셈 처리
+            operatorIndex = findAddMinusOperator(expression);
         }
 
         // 왼쪽 피연산자와 연산자 분리
@@ -47,11 +47,30 @@ public class Calc {
     }
 
     private static int findOperator(String expression, int startIndex){
+        boolean isMinus = true;  // 음수 판별
+
         for (int i = startIndex; i < expression.length(); i++) {
             char ch = expression.charAt(i);
-            if (ch == '+' || ch == '-' || ch == '*' || ch == '/') {
+
+            // 연산자 중 +, -, *, / 확인
+            if (ch == '+' || ch == '*' || ch == '/') {
+                return i;  // 연산자 처리
+            }
+
+            // -가 연산자인지 확인
+            if (ch == '-'){
+                isMinus = i == 0 ||
+                        expression.charAt(i - 1) == '+' ||
+                        expression.charAt(i - 1) == '-' ||
+                        expression.charAt(i - 1) == '*' ||
+                        expression.charAt(i - 1) == '/';
+            }
+
+            // 연산자 일경우 반환
+            if (!isMinus) {
                 return i;
             }
+
         }
 
         return expression.length();
@@ -69,7 +88,7 @@ public class Calc {
     }
 
     // 일반 연산자 찾기
-    private static int findFirstOperator(String expression) {
+    private static int findAddMinusOperator(String expression) {
         for (int i = 1; i < expression.length(); i++) {
             char ch = expression.charAt(i);
             if (ch == '+' || ch == '-') {
