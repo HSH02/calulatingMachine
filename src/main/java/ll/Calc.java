@@ -8,41 +8,45 @@ public class Calc {
             throw new IllegalArgumentException("괄호 쌍이 맞지 않습니다.");
         }
 
-        return caluRecusive(expression);
+        return calReclusive(expression);
     }
 
-    private static int caluRecusive(String expression){
+    private static int calReclusive(String expression){
         int answer;
 
-        int left = 0;
-        int right = 0;
-        char operator = ' ';
+        int left;
+        int right;
+        char operator;
 
-        for(char ch : expression.toCharArray()){
-            if('0' <= ch && ch <= '9'){
-               if (left == 0) left = ch - '0';
-               else if (right == 0) right = ch - '0';
-            } else if(  ch == '+' ||
-                        ch == '-' ||
-                        ch == '*' ||
-                        ch == '/' ){
-                operator = ch;
+
+        char[] operators = {'+', '-', '*', '/'};
+        int operatorIndex = -1;
+
+        for(char op : operators){
+            System.out.println(expression.indexOf(op));
+            if(expression.indexOf(op) != -1){
+                operatorIndex = expression.indexOf(op);
+                break;
             }
         }
 
-        answer = operatorCalculation(left, right, operator);
+        left = Integer.parseInt(expression.substring(0, operatorIndex));
+        operator = expression.charAt(operatorIndex);
+        right = Integer.parseInt(expression.substring(operatorIndex + 1));
+
+        answer = operatorCalculation(right, left, operator);
 
         return answer;
     }
 
-    private static int operatorCalculation(int right, int left, char operator){
+    private static int operatorCalculation(int left, int right, char operator){
         int answer;
 
         switch (operator) {
-            case '+' -> answer = left + right;
-            case '-' -> answer = left - right;
-            case '*' -> answer = left * right;
-            case '/' -> answer = left / right;
+            case '+' -> answer = right + left;
+            case '-' -> answer = right - left;
+            case '*' -> answer = right * left;
+            case '/' -> answer = right / left;
             default -> throw new IllegalArgumentException("지원되지 않는 연산자입니다.");
         }
 
